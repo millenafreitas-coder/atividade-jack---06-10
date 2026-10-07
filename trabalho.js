@@ -48,7 +48,45 @@ app.post('/chamados', async (req, res) => {
       return res.status(500).json({ erro: "Erro ao salvar" });
     }
   
-  })   
+  });
+
+// atv PATCH
+app.patch('/chamados/:id/assumir', async (req, res) => {
+  const{id} = req.params
+  const {nome} = req.body
+  try{
+    const atualizarChamados = await pool.query('update chamados set responsavel = $1 where id = $2  RETURNING *',[nome, id] )
+    return res.status(200).json(atualizarChamados.rows)
+    } catch (err) {
+      console.log(err);
+      
+      return res.status(500).json({err})
+
+  }
+})
+
+// atv PATCH
+app.patch('/chamados/:id/finalizar', async (req, res) => {
+  const{id} = req.params
+
+  try{
+    const atualizarChamados = await pool.query('update chamados set status = $1 where id = $2  RETURNING *',["finalizado", id] )
+    return res.status(200).json(atualizarChamados.rows)
+    } catch (err) {
+      console.log(err);
+      
+      return res.status(500).json({err})
+    }
+  })
+
+  app.delete('/chamados/:id', async (req, res) => {
+    const {id} = req.params
+    try{
+      const deletarChamados = await pool.query('DELETE FROM chamados WHERE id = $1;', [Number(id)])
+      return res.status(200).json(deletarChamados.rows)
+    } catch (err) {}
+  })
+
 
 
 
